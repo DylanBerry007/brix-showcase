@@ -335,8 +335,8 @@ f.addEventListener("submit",function(e){e.preventDefault();er.textContent="";
   var fd=new FormData(f),o={};fd.forEach(function(v,k){o[k]=v;});
     bt.disabled=true;bt.firstChild.textContent="Sending ";
   fetch("/api/sponsor",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(o)})
-  .then(function(r){return r.json();}).then(function(j){if(j.success){f.hidden=true;ok.hidden=false;}else{throw 0;}})
-  .catch(function(){er.textContent="Something went wrong. Please try again in a moment.";})
+  .then(function(r){return r.json();}).then(function(j){if(j.success){f.hidden=true;ok.hidden=false;}else{throw new Error(j.message||"");}})
+  .catch(function(x){er.textContent="Something went wrong. Please try again in a moment."+(x&&x.message?" ("+x.message+")":"");})
   .then(function(){bt.disabled=false;bt.firstChild.textContent="Send ";});
 });})();
 var LINKS = { rsvp: "https://netwrk.vip/events/join/H4ffOAcWzZ_ofitqhiv_FAc_uJBvx2ad", spotify: "", youtube: "" };

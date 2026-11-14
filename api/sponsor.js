@@ -29,7 +29,7 @@ module.exports = async (req, res) => {
     const j = await r.json().catch(() => ({}));
     const ok = r.ok && String(j.success) === "true";
     if (!ok) console.error("formsubmit", r.status, j);
-    return res.status(ok ? 200 : 502).json({ success: ok });
+    return res.status(ok ? 200 : 502).json({ success: ok, message: ok ? undefined : String(j.message || ("Mail service status " + r.status)) });
   } catch (e) {
     console.error(e);
     return res.status(502).json({ success: false });
