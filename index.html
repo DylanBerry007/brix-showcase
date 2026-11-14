@@ -159,7 +159,7 @@ a.logo{text-decoration:none}
 .pop .job-desc{font-size:13px;line-height:1.5;margin:12px 0 0;color:var(--ash)}
 .sf{display:grid;gap:12px}
 .sf label{display:grid;gap:6px;font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ash)}
-.sf label span{text-transform:none;letter-spacing:0}
+.sf .req{color:var(--blood);font-weight:700}
 .sf input,.sf textarea{font:inherit;font-family:var(--f-body,inherit);font-size:15px;letter-spacing:0;text-transform:none;color:var(--bone);background:var(--ink);border:1px solid var(--line);padding:10px 12px;border-radius:0;width:100%;box-sizing:border-box}
 .sf input:focus,.sf textarea:focus{outline:none;border-color:var(--blood)}
 .sf textarea{resize:vertical;min-height:72px}
@@ -290,11 +290,11 @@ button.pill{cursor:pointer;font-family:var(--f-mono)}
   <h3 id="sponsor-h">Sponsor this event?</h3>
   <p>Tell us about your brand and we'll get back to you with sponsorship options for the Smash-Nashville Showcase.</p>
   <form id="sponsor-form" class="sf" novalidate>
-    <label>Your name<input name="name" required autocomplete="name"></label>
-    <label>Company or brand<input name="company" required autocomplete="organization"></label>
-    <label>Email<input name="email" type="email" required autocomplete="email"></label>
-    <label>Phone (optional)<input name="phone" type="tel" autocomplete="tel"></label>
-    <label>What do you have in mind?<textarea name="message" rows="3" required></textarea></label>
+    <label><span>Your name <b class="req" aria-hidden="true">*</b></span><input name="name" required autocomplete="name"></label>
+    <label>Company or brand<input name="company" autocomplete="organization"></label>
+    <label><span>Email <b class="req" aria-hidden="true">*</b></span><input name="email" type="email" required autocomplete="email"></label>
+    <label>Phone<input name="phone" type="tel" autocomplete="tel"></label>
+    <label>What do you have in mind?<textarea name="message" rows="3"></textarea></label>
     <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
     <p class="sf-err" id="sf-err" role="alert"></p>
     <button class="rsvp" type="submit" id="sf-btn">Send <span aria-hidden="true">→</span></button>
@@ -326,18 +326,15 @@ button.pill{cursor:pointer;font-family:var(--f-mono)}
 (function(){var d=document.getElementById("perform"),o=document.getElementById("perform-open");if(!d||!d.showModal)return;
 o.addEventListener("click",function(e){e.preventDefault();d.showModal();});
 d.addEventListener("click",function(e){if(e.target===d||e.target.hasAttribute("data-close"))d.close();});})();
-var SPONSOR_KEY = "";
 (function(){var d=document.getElementById("sponsor");if(!d||!d.showModal)return;
 var f=document.getElementById("sponsor-form"),ok=document.getElementById("sf-ok"),er=document.getElementById("sf-err"),bt=document.getElementById("sf-btn");
 document.querySelectorAll("[data-sponsor]").forEach(function(b){b.addEventListener("click",function(){d.showModal();});});
 d.addEventListener("click",function(e){if(e.target===d||e.target.hasAttribute("data-close"))d.close();});
 f.addEventListener("submit",function(e){e.preventDefault();er.textContent="";
-  if(!f.checkValidity()){er.textContent="Please fill in your name, company, a valid email and a short note.";return;}
-  if(!SPONSOR_KEY){er.textContent="Sponsor form is almost ready. Please check back shortly.";return;}
+  if(!f.checkValidity()){er.textContent="Please add your name and a valid email.";return;}
   var fd=new FormData(f),o={};fd.forEach(function(v,k){o[k]=v;});
-  o.access_key=SPONSOR_KEY;o.subject="Sponsor inquiry: Smash-Nashville Showcase ("+o.company+")";o.from_name="Smash-Nashville Showcase";o.replyto=o.email;
-  bt.disabled=true;bt.firstChild.textContent="Sending ";
-  fetch("https://api.web3forms.com/submit",{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify(o)})
+    bt.disabled=true;bt.firstChild.textContent="Sending ";
+  fetch("/api/sponsor",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(o)})
   .then(function(r){return r.json();}).then(function(j){if(j.success){f.hidden=true;ok.hidden=false;}else{throw 0;}})
   .catch(function(){er.textContent="Something went wrong. Please try again in a moment.";})
   .then(function(){bt.disabled=false;bt.firstChild.textContent="Send ";});
